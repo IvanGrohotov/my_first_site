@@ -1,0 +1,30 @@
+{% extends "layout/basic.html" %}
+
+{% block content %}
+<p>
+    {% for d in date_list %}
+    {{d}}
+    {% endfor %}
+</p>
+{% for bb in bbs %}
+<div class="b">
+    <h2><a href="{% url 'detail' pk=bb.pk %}">{{bb.title_and_price}}</a></h2>
+    <p>{{bb.content}}</p>
+    <p><a href="{% url 'by_rubric' bb.rubric.pk %}">
+        {{ bb.published|date:"d.m.Y H:i:s" }}</a></p>
+    <button><a href="{% url 'edit' pk=bb.pk %}">Изменить</a></button>
+    <button><a href="{% url 'delite' pk=bb.pk %}">Удалить</a></button>
+</div>
+{% endfor %}
+<div>
+    {% if page.has_previous %}
+    <a href="?page={{ page.previous_page_number }}">&lt;</a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    {% endif %}
+    Часть №{{ page.number }} из {{ page.paginator.num_pages }}
+    {% if page.has_next %}
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="?page={{ page.next_page_number }}">&gt;</a>
+    {% endif %}
+</div>
+{% endblock %}

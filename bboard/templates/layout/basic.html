@@ -1,0 +1,32 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Typr"
+        content="text/html; charset=utf-8">
+        <link rel="stylesheet" type="text/css" href="{% static 'bboard/style.css' %}">
+        <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
+    </head>
+    <body>
+        <header>
+            <h1>Объявления</h1>
+        </header>
+        <nav>
+            <a href="{% url 'index' %}">Главная</a>
+            <a href="{% url 'add' %}">Добавить</a>
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'logout' %}">Выйти</a>
+            <a href="{% url 'password_reset' %}">Восстановление</a>
+            <a href="{% url 'rubrics' %}">Рубрики</a>
+            <a href="{% url 'rubrics_formset' %}">Группа рубрики</a>
+            {% for rubric in rubrics %}
+            <a href="{{ rubric.get_absolute_url }}">{{ rubric.name }}</a>
+            {% endfor %}
+        </nav>
+        <section>
+        {% block content %}
+        {% endblock %}
+        </section>
+    </body>
+</html>
