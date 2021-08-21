@@ -8,7 +8,7 @@ from django.forms import modelform_factory, DecimalField
 from django.forms import widgets, modelformset_factory
 from django.forms.formsets import formset_factory
 from django.forms.widgets import Select
-#from captcha.fields import Charfield
+from captcha.fields import Charfield
 
 from .models import Bb, Rubric, User
 

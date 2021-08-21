@@ -79,9 +79,9 @@ class Spare(models.Model):
 
 class Machine(models.Model):
     name = models.CharField(max_length=30)     #through='Kit',through_fields=('machine', 'spare')
-    spares = models.ManyToManyField(Spare, )#наследование многие-со-многими, в ведущей модели указываем связующую
+    spares = models.ManyToManyField(Spare, through='Kit',through_fields=('machine', 'spare'))#наследование многие-со-многими, в ведущей модели указываем связующую
 
-'''class Kit(models.Model):#связующая модель для добавления дополнительных данных
+class Kit(models.Model):#связующая модель для добавления дополнительных данных
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)#связь многи-с-многие с вудущей и ведомой моделями
     spare= models.ForeignKey(Spare, on_delete=models.CASCADE)#
     count = models.IntegerField()#поля доп данных'''
