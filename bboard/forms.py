@@ -8,7 +8,7 @@ from django.forms import modelform_factory, DecimalField
 from django.forms import widgets, modelformset_factory
 from django.forms.formsets import formset_factory
 from django.forms.widgets import Select
-from captcha.fields import Charfield
+from captcha.fields import CaptchaField
 
 from .models import Bb, Rubric, User
 
@@ -23,6 +23,7 @@ class BbForm(forms.ModelForm):#полное объявление всех пол
     rubric = forms.ModelChoiceField(queryset=Rubric.objects.all(),
             label='Рубрика', help_text='Не забудьте задать рубрику!',
             widget=forms.widgets.Select(attrs={'size': 8}))
+    captcha = CaptchaField()
     
 
     def clean_title(self):#свой валидатор
