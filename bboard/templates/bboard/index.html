@@ -1,4 +1,5 @@
 {% extends "layout/basic.html" %}
+{% load bootstrap4 %}
 
 {% block content %}
 <p>
@@ -26,5 +27,6 @@
     &nbsp;&nbsp;|&nbsp;&nbsp;
     <a href="?page={{ page.next_page_number }}">&gt;</a>
     {% endif %}
+    {% bootstrap_pagination page size='small' %}
 </div>
 {% endblock %}

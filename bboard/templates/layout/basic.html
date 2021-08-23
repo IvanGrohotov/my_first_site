@@ -1,4 +1,5 @@
 {% load static %}
+{% load bootstrap4 %}
 
 <!DOCTYPE html>
 <html>
@@ -7,6 +8,8 @@
         content="text/html; charset=utf-8">
         <link rel="stylesheet" type="text/css" href="{% static 'bboard/style.css' %}">
         <title>{% block title %}Главная{% endblock %} - Доска объявлений</title>
+        {% bootstrap_css %}
+        {% bootstrap_javascript jquery='full' %}
     </head>
     <body>
         <header>

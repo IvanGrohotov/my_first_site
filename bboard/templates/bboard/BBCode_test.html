@@ -1,0 +1,11 @@
+{% extends "layout/basic.html" %}
+{% load bbcode_tags %}
+
+{% block content %}
+{% for bb in bbs %}
+<div class="b">
+    <h2>{% bbcode bb.title %}</h2>
+    <h2>{% bbcode bb.content %}</h2>
+</div>
+{% endfor %}
+{% endblock %}

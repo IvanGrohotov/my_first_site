@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'captcha',
     'precise_bbcode',
+    'bootstrap4',
     'bboard.apps.BboardConfig',
 ]#добавили приложение Bboard
 

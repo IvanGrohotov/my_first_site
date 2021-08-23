@@ -19,9 +19,10 @@ from django.forms import modelformset_factory, BaseModelFormSet, formset_factory
 from django.forms.formsets import ORDERING_FIELD_NAME, formset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from precise_bbcode.bbcode import get_parser
 
 
-from .models import Bb#импортируем из моделей класс модели(поля для таблицы)
+from .models import BBCodeModel, Bb#импортируем из моделей класс модели(поля для таблицы)
 from .models import Rubric#класс Рубрик
 from .forms import BbForm, RegisterUserForm, RubricFormSet, SearchForm#класс формы
 
@@ -115,6 +116,12 @@ def rubrics(request):#упорядочивание рубрик и удален�
     return render(request, 'bboard/rubrics.html', context)
         #return HttpResponseForbidden('Вы не имеете допуска к списку рубрик')
         #return redirect_to_login(reverse('rubrics'))
+
+
+def BBcodeTest(request):
+    bbs = BBCodeModel.objects.all()#
+    context = {'bbs':bbs}#
+    return render(request, 'bboard/BBCode_test.html', context)#
 
 class BbCreateView(CreateView):#контроллер класс формы
     template_name = 'bboard/create.html'#путь к файлу шаблона (страница с формой)

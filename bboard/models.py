@@ -58,6 +58,17 @@ class Bb(models.Model):#описание полей базы данных (та�
             raise ValidationError(errors)
 
 
+class BBCodeModel(models.Model):#описание полей базы данных (таблица)
+    title = models.CharField(max_length=50, verbose_name='Товар', 
+            validators=[validators.RegexValidator(regex='^.{4,}$')],
+            error_messages={'invalid': 'Неправильное название товара'})#добавим валидатор по регулярному выражению
+    content = models.TextField(null=True, blank=True, verbose_name='Описание',)
+
+    class Meta:#параметры полей и моделей(представление в человеческом виде-ед и мн число и порядок)
+        verbose_name_plural = 'Объявления BBC'
+        verbose_name = 'Объявление BBC'
+
+
 class Rubric (models.Model):#клас рубрик
     name = models.CharField(max_length=20, db_index=True, verbose_name='Название')
     order = models.SmallIntegerField(default=0, db_index=True)

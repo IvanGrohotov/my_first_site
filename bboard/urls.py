@@ -1,11 +1,12 @@
 #маршруты приложения
 from django.urls import path
 
-from .views import index, by_rubric, add_and_save,index_kwarg, rubrics, search, formset_processing#импорт контроллер-функций для выполнения по заданному запросу
+from .views import index, by_rubric, add_and_save,index_kwarg, rubrics, search, formset_processing, BBcodeTest#импорт контроллер-функций для выполнения по заданному запросу
 from .views import BbCreateView,  BbindexView, BBDetailView, BbByRubricView, BbAddView, BbEditView, BbdeliteView, BbRedirectView, UserCreateView#импорт контроллера класса
 from .views import RubricFormsetView
 
 urlpatterns = [
+    path('BBCode_test/', BBcodeTest),
     path('formset_processing/', formset_processing),
     path('search_rubric/', search),
     path('detail/<int:pk>/', BBDetailView.as_view(), name='detail'),

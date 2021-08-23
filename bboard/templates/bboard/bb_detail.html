@@ -1,4 +1,5 @@
 {% extends "layout/basic.html" %}
+{% load filtersandtags %}
 
 {% block title %}{{ bb.title}}{% endblock %}
 
@@ -6,6 +7,6 @@
 <p>Рубрика: {{ bb.rubric.name }}</p>
 <h2>{{ bb.title }}</h2>
 <p>{{bb.content}}</p>
-<p>Цена: {{ bb.price }}</p>
+<p>Цена: {{ bb.price|currency }}</p>
 <button><a href="{% url 'edit' pk=bb.pk %}">Изменить</a></button>
 {% endblock %}
