@@ -22,9 +22,9 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from precise_bbcode.bbcode import get_parser
 
 
-from .models import BBCodeModel, Bb#импортируем из моделей класс модели(поля для таблицы)
+from .models import BBCodeModel, Bb, Img, AnyFile#импортируем из моделей класс модели(поля для таблицы)
 from .models import Rubric#класс Рубрик
-from .forms import BbForm, RegisterUserForm, RubricFormSet, SearchForm#класс формы
+from .forms import BbForm, RegisterUserForm, RubricFormSet, SearchForm, AnyFileForm, ImgForm#класс формы
 
 def by_rubric(request, rubric_id):#котролер для разбиения по рубрикам
     bbs = Bb.objects.filter(rubric=rubric_id)#отбор всех экземпляров класса Бб по рубрике =id
@@ -314,3 +314,40 @@ def formset_processing(request):
         formset = FS()
     context = {'formset':formset}
     return render(request, 'bboard/formset.html', context)
+
+
+def addImg(request):#добавить картинку
+    if request.method =='POST':
+        form = ImgForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = ImgForm()
+    context = {'form': form}
+    return render(request, 'bboard/add_file.html', context)
+
+
+def addAnyFile(request):#добавить файл
+    if request.method =='POST':
+        form = AnyFileForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('index')
+    else:
+        form = AnyFileForm()
+    context = {'form': form}
+    return render(request, 'bboard/add_file.html', context)
+
+
+def AllImg(request):#показатьт все фото
+    imgs = Img.objects.all()
+    context = {'imgs': imgs}
+    return render(request, 'bboard/AllImg.html', context)#
+
+
+def ImgDelite(request, pk):#удалить фото
+    img = Img.objects.get(pk=pk)
+    img.img.delete()
+    img.delete()
+    return redirect('index/')

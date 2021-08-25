@@ -10,7 +10,7 @@ from django.forms.formsets import formset_factory
 from django.forms.widgets import Select
 from captcha.fields import CaptchaField
 
-from .models import Bb, Rubric, User
+from .models import Bb, Rubric, User, Img, AnyFile
 
 
 class BbForm(forms.ModelForm):#полное объявление всех полей
@@ -83,3 +83,31 @@ class SearchForm(forms.Form):
     rubric = forms.ModelChoiceField(queryset=Rubric.objects.all(), label='Рубрика')
 
 
+class ImgForm(forms.ModelForm):
+    img = forms.ImageField(label='Изображение', 
+        validators=[validators.FileExtensionValidator(
+            allowed_extensions=('gif', 'jpg', 'png'))],
+            error_messages={'invalid_extension': 'Этот формат файлов не поддерживается'})
+    desc = forms.CharField(label='Описание', widget=forms.widgets.Textarea())
+
+    class Meta:
+        model = Img
+        fields = '__all__'
+
+
+class AnyFileForm(forms.ModelForm):
+    any_file = forms.ImageField(label='Файл', 
+        validators=[validators.FileExtensionValidator(
+            allowed_extensions=('gif', 'jpg', 'png', 'doc'))],
+            error_messages={'invalid_extension': 'Этот формат файлов не поддерживается'})
+    desc = forms.CharField(label='Описание', widget=forms.widgets.Textarea())
+    archive = forms.ImageField(label='Файл архив', 
+        validators=[validators.FileExtensionValidator(
+            allowed_extensions=('gif', 'jpg', 'png', 'doc'))],
+            error_messages={'invalid_extension': 'Этот формат файлов не поддерживается'})
+
+
+    class Meta:
+        model = AnyFile
+        fields = '__all__'
+    

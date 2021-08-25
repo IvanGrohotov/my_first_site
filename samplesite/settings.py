@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,6 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'captcha',
     'precise_bbcode',
+    'django_cleanup',
+    'easy_thumbnails',
+    'social_django',
     'bootstrap4',
     'bboard.apps.BboardConfig',
 ]#добавили приложение Bboard
@@ -66,6 +70,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -88,12 +94,34 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
+class NoForbiddenCharsValidator:
+    def __init__ (self, forbidden_chars=('',)):
+        self.forbidden_chars = forbidden_chars
+
+    def validate(self, password, user=None):
+        for fc in self.forbidden_chars:
+            if fc in password:
+                raise ValidationError('Пароль не должен содержать недопустимые символы %s' % ', '.join(self.forbidden_chars),
+                    code='forbidden_chars_present')
+
+    def get_help_text(self):
+        return 'Пароль не должен содержать недопустимые символы %s' % ', '.join(self.forbidden_chars)
+
+
+def get_timestamp_path(instance, filename):
+    return '%s%s' %(datetime.now().timestamp(), splitext(filename)[1])
+
 AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'NoForbiddenCharsValidator',
+        'OPTIONS': {'forbidden_chars': (' ', ',', '.', ':', ';',)}
+    },
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
@@ -141,3 +169,44 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'mnchngshnds@gmail.com'
 EMAIL_HOST_PASSWORD = 'pv2fBkf13'
 EMAIL_USE_TLS = True
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+THUNBNAIL_ALIASES = {
+    'bboard.Img.img':{
+        'default':{
+            'size': (500,300),
+            'crop': 'scale',
+        },
+    },
+
+    'bboard':{
+        'default':{
+            'size': (400,300),
+            'crop': 'smart',
+        },
+    },
+    '': {
+        'default': {
+            'size': (180, 240),
+            'crop': 'scale',
+        },
+        'big':{
+            'size': (480, 640),
+            'crop': '10,10'
+        },
+    },   
+}
+
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.vk.VKOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+SOCIAL_AUTH_VK_OAUTH2_KEY = '7934485'
+SOCIAL_AUTH_VK_OAUTH2_SECRET = 'g3Eem9KnPOMItlSattT1'

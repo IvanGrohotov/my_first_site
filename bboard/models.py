@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User #стандартная модель хранящая сведения о пользовотеле на джанго сайте
 from django.core import validators
 from django.core.exceptions import ValidationError
+from datetime import datetime
+from os.path import splitext
 
 def validate_even(val):#свой валидатор
     if val % 2 != 0:
@@ -16,6 +18,24 @@ def validate_even(val):#свой валидатор
         if val < self.min_value or val> self.max_value:
             raise ValidationError('Введенное число должно находиться в диапазоне от %(min)s до %(max)s', 
             code='out_of_range', params={'min': self.min_value, 'max': self.max_value})'''
+
+
+class NoForbiddenCharsValidator:
+    def __init__ (self, forbidden_chars=('',)):
+        self.forbidden_chars = forbidden_chars
+
+    def validate(self, password, user=None):
+        for fc in self.forbidden_chars:
+            if fc in password:
+                raise ValidationError('Пароль не должен содержать недопустимые символы %s' % ', '.join(self.forbidden_chars),
+                    code='forbidden_chars_present')
+
+    def get_help_text(self):
+        return 'Пароль не должен содержать недопустимые символы %s' % ', '.join(self.forbidden_chars)
+
+
+def get_timestamp_path(instance, filename):
+    return '%s%s' %(datetime.now().timestamp(), splitext(filename)[1])
 
 
 class Bb(models.Model):#описание полей базы данных (таблица)
@@ -102,3 +122,22 @@ class RevRubric(Rubric):#наследование модели способ со
     class Meta:
         proxy = True
         ordering = ['-name']
+
+
+class Img(models.Model):#картинки
+    img = models.ImageField(verbose_name='Изображение', upload_to=get_timestamp_path)
+    desc = models.TextField(verbose_name='Описание')
+
+    class Meta:
+        verbose_name='Изображение'
+        verbose_name_plural = 'Изображения'
+
+
+class AnyFile(models.Model):#любой файл
+    any_file = models.FileField(verbose_name='Файл', upload_to=get_timestamp_path)
+    desc = models.TextField(verbose_name='Описание')
+    archive = models.FileField(upload_to='archives/%Y/%m/%d/')
+
+    class Meta:
+        verbose_name='Файл'
+        verbose_name_plural = 'Файл'

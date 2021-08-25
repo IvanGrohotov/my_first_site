@@ -19,10 +19,15 @@
             <a href="{% url 'index' %}">Главная</a>
             <a href="{% url 'add' %}">Добавить</a>
             <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'social:begin' 'vk-oauth2' %}">Войти через ВКонтакте</a>
             <a href="{% url 'logout' %}">Выйти</a>
+            <a href="{% url 'add_user' %}">Создать аккаунт</a>
             <a href="{% url 'password_reset' %}">Восстановление</a>
             <a href="{% url 'rubrics' %}">Рубрики</a>
             <a href="{% url 'rubrics_formset' %}">Группа рубрики</a>
+            <a href="{% url 'add_img' %}">Добавить картинку</a>
+            <a href="{% url 'add_file' %}">Добавить файл</a>
+            <a href="{% url 'all_img' %}">Все картинки</a>
             {% for rubric in rubrics %}
             <a href="{{ rubric.get_absolute_url }}">{{ rubric.name }}</a>
             {% endfor %}
