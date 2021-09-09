@@ -1,0 +1,15 @@
+{% extends "layout/basic.html" %}
+{% load bootstrap4 %}
+{% load thumbnail %}
+
+{% block content %}
+<p>{{tc}}</p>
+{% for img in imgscache %}
+<div class="b">
+    <div><img src="{% thumbnail img.img '300x200'%}"></div>   
+    <div><a href="{{ img.img.url }}">Загрузить картинку</div>
+    <div><img src="{{ img.img.url }}"></div>
+    <button><a href="{% url 'img_delete' pk=img.pk %}">Удалить</a></button>
+</div>
+{% endfor %}
+{% endblock %}

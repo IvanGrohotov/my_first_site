@@ -4,6 +4,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from os.path import splitext
+from django.db.models.signals import post_save
 
 def validate_even(val):#свой валидатор
     if val % 2 != 0:
@@ -110,7 +111,7 @@ class Spare(models.Model):
 
 class Machine(models.Model):
     name = models.CharField(max_length=30)     #through='Kit',through_fields=('machine', 'spare')
-    spares = models.ManyToManyField(Spare, through='Kit',through_fields=('machine', 'spare'))#наследование многие-со-многими, в ведущей модели указываем связующую
+    spares = models.ManyToManyField(Spare, through='Kit', through_fields=('machine', 'spare'))#наследование многие-со-многими, в ведущей модели указываем связующую
 
 class Kit(models.Model):#связующая модель для добавления дополнительных данных
     machine = models.ForeignKey(Machine, on_delete=models.CASCADE)#связь многи-с-многие с вудущей и ведомой моделями
@@ -141,3 +142,10 @@ class AnyFile(models.Model):#любой файл
     class Meta:
         verbose_name='Файл'
         verbose_name_plural = 'Файл'
+
+
+def post_save_dispatcher(sender, **kwargs):
+    if kwargs['created']:
+        print('Объявление в рубрике "%s" создано' % kwargs['instance'].rubric.name)
+
+post_save.connect(post_save_dispatcher, sender=Bb)

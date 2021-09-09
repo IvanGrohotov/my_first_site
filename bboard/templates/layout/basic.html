@@ -1,5 +1,6 @@
 {% load static %}
 {% load bootstrap4 %}
+{% load cache %}
 
 <!DOCTYPE html>
 <html>
@@ -15,6 +16,7 @@
         <header>
             <h1>Объявления</h1>
         </header>
+        {% cache 300 navbar %}
         <nav>
             <a href="{% url 'index' %}">Главная</a>
             <a href="{% url 'add' %}">Добавить</a>
@@ -32,7 +34,17 @@
             <a href="{{ rubric.get_absolute_url }}">{{ rubric.name }}</a>
             {% endfor %}
         </nav>
+        {% endcache %}
         <section>
+            {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                    {{message}}
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
         {% block content %}
         {% endblock %}
         </section>

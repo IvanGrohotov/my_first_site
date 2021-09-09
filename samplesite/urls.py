@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.contrib.auth.views import LoginView,LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib.staticfiles.views import serve
+from django.views.decorators.cache import never_cache
 
 from bboard.views import index
 
@@ -51,3 +53,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)#Маршрут для выгрузки файлов
+    urlpatterns.append(path('static/<path:path>', never_cache(serve)))

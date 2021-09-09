@@ -3,9 +3,11 @@ from django.urls import path
 
 from .views import index, by_rubric, add_and_save,index_kwarg, rubrics, search, formset_processing, BBcodeTest, addImg, addAnyFile, AllImg,ImgDelite#импорт контроллер-функций для выполнения по заданному запросу
 from .views import BbCreateView,  BbindexView, BBDetailView, BbByRubricView, BbAddView, BbEditView, BbdeliteView, BbRedirectView, UserCreateView#импорт контроллера класса
-from .views import RubricFormsetView
+from .views import RubricFormsetView, api_rubrics, api_rubric_detail
 
 urlpatterns = [
+    path('api/rubrics/<int:pk>', api_rubric_detail),
+    path('api/rubrics/', api_rubrics),
     path('img_delete/<int:pk>/', ImgDelite, name='img_delete'),
     path('all_img/', AllImg, name='all_img'),
     path('add_file/', addAnyFile, name='add_file'),

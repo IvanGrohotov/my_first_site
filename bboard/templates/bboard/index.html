@@ -7,6 +7,7 @@
     {{d}}
     {% endfor %}
 </p>
+<p>{{cnt}}</p>
 {% for bb in bbs %}
 <div class="b">
     <h2><a href="{% url 'detail' pk=bb.pk %}">{{bb.title_and_price}}</a></h2>

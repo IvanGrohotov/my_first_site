@@ -1,9 +1,11 @@
 '''Файл для описания контролера для приложения Bboard'''
+import re
 from django import template
 from django.contrib.auth.views import redirect_to_login
 from django.core import paginator
 from django.core.exceptions import ValidationError
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
+from django.http import response
 from django.http.response import HttpResponseRedirect
 from django.template import loader
 from django.shortcuts import redirect, render
@@ -20,12 +22,21 @@ from django.forms.formsets import ORDERING_FIELD_NAME, formset_factory
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from precise_bbcode.bbcode import get_parser
+from django.contrib.messages.views import SuccessMessageMixin
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_headers
+from django.core.cache import cache
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from rest_framework import status
 
 
 from .models import BBCodeModel, Bb, Img, AnyFile#импортируем из моделей класс модели(поля для таблицы)
 from .models import Rubric#класс Рубрик
 from .forms import BbForm, RegisterUserForm, RubricFormSet, SearchForm, AnyFileForm, ImgForm#класс формы
+from .serializers import RubricSerializer
 
+@cache_page(60 * 5)
 def by_rubric(request, rubric_id):#котролер для разбиения по рубрикам
     bbs = Bb.objects.filter(rubric=rubric_id)#отбор всех экземпляров класса Бб по рубрике =id
     rubrics = Rubric.objects.all()#все рубрики
@@ -34,6 +45,7 @@ def by_rubric(request, rubric_id):#котролер для разбиения п
     'current_rubric': current_rubric}#поля шаблона связаны с переменными
     return render(request, 'bboard/by_rubric.html', context)
 
+@vary_on_headers('User-Agent')
 def index(request):
     '''s = 'Список объявлений\r\n\r\n\r\n'
     for bb in Bb.objects.order_by('-published'):
@@ -53,7 +65,12 @@ def index(request):
     else:
         page_num = 1
     page = paginator.get_page(page_num)
-    context = {'bbs': page.object_list, 'rubrics': rubrics, 'page': page}#дополним вывод рубрик
+    if 'counter' in request.session:
+        cnt = request.session['counter']+1
+    else:
+        cnt = 1
+    request.session['counter'] = cnt
+    context = {'bbs': page.object_list, 'rubrics': rubrics, 'page': page, 'cnt': request.session['counter']}#дополним вывод рубрик
     return render(request, 'bboard/index.html', context)#
 
 '''def add(request):#создание формы и вывод на экран страницы добавлнеия
@@ -123,10 +140,11 @@ def BBcodeTest(request):
     context = {'bbs':bbs}#
     return render(request, 'bboard/BBCode_test.html', context)#
 
-class BbCreateView(CreateView):#контроллер класс формы
+class BbCreateView(SuccessMessageMixin, CreateView):#контроллер класс формы
     template_name = 'bboard/create.html'#путь к файлу шаблона (страница с формой)
     form_class = BbForm#класс формы связанной с моделью
     success_url = reverse_lazy('index')#адрес перенаправляющий в случае успешной сохранении формы
+    success_message = 'Объявление о продаже товара "%(title)s" создано'
 
     def get_context_data(self, **kwargs):#нужно добавить в контекст шаблона список рубрик
         context = super().get_context_data(**kwargs)#метод формируент контекст шаблона
@@ -350,4 +368,36 @@ def ImgDelite(request, pk):#удалить фото
     img = Img.objects.get(pk=pk)
     img.img.delete()
     img.delete()
-    return redirect('index/')
+    return redirect('index')
+
+
+@api_view(['GET', 'POST'])
+def api_rubrics(request):
+    if request.method == 'GET':
+        rubrics = Rubric.objects.all()
+        serializer = RubricSerializer(rubrics, many=True)
+        #return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = RubricSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'PATCH', 'DELETE'])
+def api_rubric_detail(request, pk):
+    rubric = Rubric.objects.get(pk=pk)
+    if request.method == 'GET':
+        serializer = RubricSerializer(rubrics)
+        return Response(serializer.data)
+    elif request.method =='PUT' or request.method == 'PATCH':
+        serializer = RubricSerializer(rubric, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method =='DELETE':
+        rubric.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
